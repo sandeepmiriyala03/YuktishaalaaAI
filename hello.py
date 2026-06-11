@@ -1,4 +1,4 @@
-name = "Sandeep"
+name = "John Doe"
 age = 35
 is_python_learning = True
 
