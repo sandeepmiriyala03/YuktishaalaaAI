@@ -1,11 +1,27 @@
 class Employee:
 
+    # Constructor
     def __init__(self, name, age, salary, status):
-        print("Initializing Employee object...")
+        print("Constructor Called")
+
         self.name = name
         self.age = age
         self.salary = salary
         self.status = status
+
+    # Instance Method
+    @staticmethod
+    def display(self):
+        print("\nEmployee Details")
+        print("Name:", self.name)
+        print("Age:", self.age)
+        print("Salary:", self.salary)
+        print("Status:", "Active" if self.status else "Inactive")
+
+    # Static Method
+    @staticmethod
+    def company():
+        print("Company Name: OpenAI")
 
 
 name = input("Enter employee name: ")
@@ -13,11 +29,6 @@ age = int(input("Enter employee age: "))
 salary = float(input("Enter employee salary: "))
 status = input("Enter employee status (Active/Inactive): ").lower() == "active"
 
-emp1 = Employee(name, age, salary, status)
-
-print("\nEmployee Details")
-print("Name:", emp1.name)
-print("Age:", emp1.age)
-print("Salary:", emp1.salary)
-print("Status:", "Active" if emp1.status else "Inactive")
-print("Employee object created successfully!")
+# Constructor called automatically
+Employee.display(Employee(name, age, salary, status))
+Employee.company()
