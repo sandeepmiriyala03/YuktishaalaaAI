@@ -1,50 +1,16 @@
-from fastapi import FastAPI, Header, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI
 
-app = FastAPI()
+from api.employee_controller import router as employee_router
+from api.department_controller import router as department_router
 
-API_KEY = "sandeep123"
+app = FastAPI(
+    title="YuktishaalaaAI API"
+)
 
-class Employee(BaseModel):
-    id: int
-    name: str
-    salary: int
-    age: int
+app.include_router(
+    employee_router
+)
 
-class department(BaseModel):
-    name: str
-    location: str
-    employees: list[Employee]
-
-@app.post("/employee")
-def create_employee(
-    employee: Employee,
-    x_api_key: str = Header()
-):
-
-    if x_api_key != API_KEY:
-        raise HTTPException(
-            status_code=401,
-            detail="Unauthorized"
-        )
-
-    return {
-        "message": employee.name + " has been created."
-    }
-
-
-@app.post("/department")
-def create_department(
-    department: department,
-    x_api_key: str = Header()
-):
-
-    if x_api_key != API_KEY:
-        raise HTTPException(
-            status_code=401,
-            detail="Unauthorized"
-        )
-
-    return {
-        "Message": "Department details"
-    }
+app.include_router(
+    department_router
+)
