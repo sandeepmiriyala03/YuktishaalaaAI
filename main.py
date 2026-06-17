@@ -11,6 +11,11 @@ class Employee(BaseModel):
     salary: int
     age: int
 
+class department(BaseModel):
+    name: str
+    location: str
+    employees: list[Employee]
+
 @app.post("/employee")
 def create_employee(
     employee: Employee,
@@ -25,4 +30,21 @@ def create_employee(
 
     return {
         "message": employee.name + " has been created."
+    }
+
+
+@app.post("/department")
+def create_department(
+    department: department,
+    x_api_key: str = Header()
+):
+
+    if x_api_key != API_KEY:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
+        )
+
+    return {
+        "Message": "Department details"
     }
