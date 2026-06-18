@@ -17,3 +17,11 @@ class EmployeeService:
     def get_employees():
 
         return EmployeeRepository.get_employees()
+
+@staticmethod
+def get_employee():
+    return EmployeeRepository.get_employee()
+
+@staticmethod
+def get_employees_sp():
+    return EmployeeRepository.get_employees_sp()

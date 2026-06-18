@@ -70,4 +70,28 @@ class EmployeeRepository:
                 )
 
             return employees
-        
+
+    @staticmethod
+    def get_employees_sp():
+
+        with engine.connect() as conn:
+
+            result = conn.execute(
+                text("EXEC GetEmployees")
+            )
+
+            employees = []
+
+            for row in result:
+
+                employees.append(
+                    {
+                        "id": row.Id,
+                        "name": row.Name,
+                        "salary": row.Salary,
+                        "age": row.Age,
+                        "departmentId": row.DepartmentId
+                    }
+                )
+
+            return employees
