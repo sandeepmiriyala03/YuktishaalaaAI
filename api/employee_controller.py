@@ -12,8 +12,10 @@ router = APIRouter(
 def get_employees():
     return EmployeeService.get_employees()
 
+
+
 @router.get("/sp")
-def get_employee():
+def get_employees_sp():
     return EmployeeService.get_employees_sp()
 
 @router.post("")
