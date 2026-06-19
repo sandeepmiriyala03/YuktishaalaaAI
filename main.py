@@ -18,10 +18,10 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=True,     
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=False,  
+    allow_credentials=False,   
 )
 
 app.include_router(employee_router)
