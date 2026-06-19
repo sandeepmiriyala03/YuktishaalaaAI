@@ -12,7 +12,7 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",
     "https://yuktishaalaa-ai.vercel.app",
-    "https://aksharatantra.miriyala.in"  # <-- Added your exact frontend domain
+    "https://aksharatantra.miriyala.in" 
 ]
 
 app.add_middleware(
@@ -21,6 +21,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=False,  
 )
 
 app.include_router(employee_router)
