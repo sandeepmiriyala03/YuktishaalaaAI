@@ -8,24 +8,20 @@ app = FastAPI(
     title="YuktishaalaaAI API"
 )
 
-# Define which frontend applications are allowed to request data
+# Add your custom production domain right here
 origins = [
-    "http://localhost:3000",                     # Your local development server
-    "https://yuktishaalaa-ai.vercel.app",       # Your main production Vercel link
+    "http://localhost:3000",
+    "https://yuktishaalaa-ai.vercel.app",
+    "https://aksharatantra.miriyala.in"  # <-- Added your exact frontend domain
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,                       # Switch this from the static string to our array
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(
-    employee_router
-)
-
-app.include_router(
-    department_router
-)
+app.include_router(employee_router)
+app.include_router(department_router)
