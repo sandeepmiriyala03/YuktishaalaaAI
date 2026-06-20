@@ -1,0 +1,24 @@
+{
+  "short_name": "Yuktisárathi",
+  "name": "Yuktisárathi Engine Portal",
+  "description": "The intelligent digital charioteer for enterprise graph topologies by YuktishaalaaAI.",
+  "icons": [
+    {
+      "src": "/static/logo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/docs",
+  "background_color": "#0b132b",
+  "theme_color": "#0b132b",
+  "display": "standalone",
+  "orientation": "portrait"
+}
