@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.docs import get_swagger_ui_html
 
@@ -45,16 +45,31 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+# ---------- Browser tab favicon (works on every page, not just /docs) ----------
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("static/logo.png")
+
+
+# ---------- Service worker (must be served from root scope) ----------
+@app.get("/sw.js", include_in_schema=False)
+async def service_worker():
+    return FileResponse("static/sw.js", media_type="application/javascript")
+
+
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     swagger_html = get_swagger_ui_html(
         openapi_url=app.openapi_url,
         title=app.title + " - Core Dashboard",
         swagger_ui_parameters=app.swagger_ui_parameters,
+        swagger_favicon_url="/static/logo.png",
     )
 
     pwa_and_logo_payload = """
     <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" href="/static/logo.png">
+    <link rel="apple-touch-icon" href="/static/logo.png">
     <style>
       .swagger-ui .info {
         position: relative;
@@ -89,7 +104,6 @@ async def custom_swagger_ui_html():
         }
       }
 
-      /* ---------- Desktop inline install button (unchanged spirit) ---------- */
       #pwa-install-btn {
         display: none;
         align-items: center;
@@ -112,7 +126,6 @@ async def custom_swagger_ui_html():
         box-shadow: 0 6px 20px rgba(212,175,55,0.5);
       }
 
-      /* ---------- Mobile bottom-sheet install banner ---------- */
       #pwa-mobile-banner {
         position: fixed;
         left: 0;
@@ -188,7 +201,6 @@ async def custom_swagger_ui_html():
         cursor: pointer;
       }
 
-      /* ---------- iOS "Add to Home Screen" sheet ---------- */
       #pwa-ios-sheet {
         position: fixed;
         inset: 0;
@@ -297,10 +309,16 @@ async def custom_swagger_ui_html():
             || window.navigator.standalone === true;
         }
 
+        // ---- Register the service worker (required for beforeinstallprompt) ----
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.warn('Service worker registration failed:', err);
+          });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
           if (isStandalone() || recentlyDismissed()) return;
 
-          // ---- Desktop inline button (kept inside the docs description) ----
           const checkInterval = setInterval(() => {
             const descriptionEl = document.querySelector('.info .description .markdown');
             if (descriptionEl) {
@@ -330,7 +348,6 @@ async def custom_swagger_ui_html():
             }
           }, 100);
 
-          // ---- Mobile bottom-sheet banner ----
           if (!isMobile()) return;
 
           const banner = document.getElementById('pwa-mobile-banner');
@@ -348,7 +365,6 @@ async def custom_swagger_ui_html():
           }
 
           if (isIOS()) {
-            // beforeinstallprompt never fires on iOS Safari — show our own CTA
             showBanner();
             installCta.addEventListener('click', () => {
               iosSheet.classList.add('show');
