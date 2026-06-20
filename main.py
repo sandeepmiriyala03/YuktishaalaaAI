@@ -45,13 +45,11 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# ---------- Browser tab favicon (works on every page, not just /docs) ----------
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse("static/logo.png")
 
 
-# ---------- Service worker (must be served from root scope) ----------
 @app.get("/sw.js", include_in_schema=False)
 async def service_worker():
     return FileResponse("static/sw.js", media_type="application/javascript")
@@ -309,9 +307,23 @@ async def custom_swagger_ui_html():
             || window.navigator.standalone === true;
         }
 
-        // ---- Register the service worker (required for beforeinstallprompt) ----
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/sw.js').catch((err) => {
+          navigator.serviceWorker.register('/sw.js').then((registration) => {
+            registration.update();
+            if (registration.waiting) {
+              registration.waiting.postMessage('CLEAR_CACHE');
+            }
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'activated') {
+                    newWorker.postMessage('CLEAR_CACHE');
+                  }
+                });
+              }
+            });
+          }).catch((err) => {
             console.warn('Service worker registration failed:', err);
           });
         }
