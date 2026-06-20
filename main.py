@@ -64,11 +64,25 @@ async def custom_swagger_ui_html():
         swagger_favicon_url="/static/logo.png",
     )
 
-    pwa_and_logo_payload = """
+    # ---- Tags that MUST live inside <head> (manifest only works here) ----
+    head_payload = """
     <link rel="manifest" href="/static/manifest.json">
-    <link rel="icon" href="/static/logo.png">
     <link rel="apple-touch-icon" href="/static/logo.png">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    </head>
+    """
+
+    # ---- Everything else stays in <body> as before ----
+    body_payload = """
     <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        font-size: 22px;
+        line-height: 1;
+        vertical-align: middle;
+      }
+
       .swagger-ui .info {
         position: relative;
         padding-right: 240px !important;
@@ -123,6 +137,10 @@ async def custom_swagger_ui_html():
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(212,175,55,0.5);
       }
+      #pwa-install-btn .material-symbols-outlined {
+        font-size: 18px;
+        color: #fff;
+      }
 
       #pwa-mobile-banner {
         position: fixed;
@@ -171,6 +189,13 @@ async def custom_swagger_ui_html():
         font-size: 12px;
         color: #b8b8b8;
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      #pwa-mobile-banner .pwa-subtitle .material-symbols-outlined {
+        font-size: 14px;
+        color: #b8b8b8;
       }
       #pwa-mobile-banner .pwa-actions {
         display: flex;
@@ -188,15 +213,26 @@ async def custom_swagger_ui_html():
         border-radius: 20px;
         cursor: pointer;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #pwa-mobile-banner .pwa-install-cta .material-symbols-outlined {
+        font-size: 16px;
+        color: #fff;
       }
       #pwa-mobile-banner .pwa-dismiss {
         background: transparent;
         border: none;
         color: #888;
-        font-size: 20px;
-        line-height: 1;
-        padding: 4px 6px;
+        padding: 4px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+      }
+      #pwa-mobile-banner .pwa-dismiss .material-symbols-outlined {
+        font-size: 20px;
+        color: #888;
       }
 
       #pwa-ios-sheet {
@@ -225,21 +261,55 @@ async def custom_swagger_ui_html():
         to { transform: translateY(0); opacity: 1; }
       }
       #pwa-ios-sheet h3 {
-        margin: 0 0 14px 0;
+        margin: 0 0 16px 0;
         font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #pwa-ios-sheet h3 .material-symbols-outlined {
+        font-size: 22px;
+        color: #1a1a1a;
       }
       #pwa-ios-sheet ol {
+        list-style: none;
         margin: 0 0 18px 0;
-        padding-left: 20px;
+        padding: 0;
         font-size: 14px;
-        line-height: 1.8;
+      }
+      #pwa-ios-sheet li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      #pwa-ios-sheet li:last-child { border-bottom: none; }
+      #pwa-ios-sheet .step-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
       #pwa-ios-sheet .ios-icon {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         background: #efefef;
         border-radius: 6px;
-        padding: 1px 6px;
+        padding: 2px 8px;
         font-weight: 600;
+        font-size: 13px;
+      }
+      #pwa-ios-sheet .ios-icon .material-symbols-outlined {
+        font-size: 16px;
       }
       #pwa-ios-sheet button {
         width: 100%;
@@ -251,6 +321,14 @@ async def custom_swagger_ui_html():
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      #pwa-ios-sheet button .material-symbols-outlined {
+        font-size: 18px;
+        color: #fff;
       }
     </style>
 
@@ -258,23 +336,57 @@ async def custom_swagger_ui_html():
       <div class="pwa-icon"></div>
       <div class="pwa-text">
         <p class="pwa-title">Install Yuktisárathi</p>
-        <p class="pwa-subtitle">Faster access, works offline</p>
+        <p class="pwa-subtitle">
+          <span class="material-symbols-outlined">bolt</span>
+          Faster access, works offline
+        </p>
       </div>
       <div class="pwa-actions">
-        <button class="pwa-install-cta" id="pwa-install-cta-btn">Install</button>
-        <button class="pwa-dismiss" id="pwa-dismiss-btn" aria-label="Dismiss">&times;</button>
+        <button class="pwa-install-cta" id="pwa-install-cta-btn">
+          <span class="material-symbols-outlined">install_mobile</span>
+          Install
+        </button>
+        <button class="pwa-dismiss" id="pwa-dismiss-btn" aria-label="Dismiss">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
     </div>
 
     <div id="pwa-ios-sheet">
       <div class="sheet-inner">
-        <h3>📲 Install this app on your iPhone</h3>
+        <h3>
+          <span class="material-symbols-outlined">install_mobile</span>
+          Install this app on your iPhone
+        </h3>
         <ol>
-          <li>Tap the <span class="ios-icon">Share</span> icon in Safari's toolbar</li>
-          <li>Scroll down and tap <span class="ios-icon">Add to Home Screen</span></li>
-          <li>Tap <span class="ios-icon">Add</span> in the top right</li>
+          <li>
+            <span class="step-num">1</span>
+            Tap the
+            <span class="ios-icon">
+              <span class="material-symbols-outlined">ios_share</span>
+              Share
+            </span>
+            icon in Safari's toolbar
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            Scroll down and tap
+            <span class="ios-icon">
+              <span class="material-symbols-outlined">add_box</span>
+              Add to Home Screen
+            </span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            Tap
+            <span class="ios-icon">Add</span>
+            in the top right
+          </li>
         </ol>
-        <button id="pwa-ios-close-btn">Got it</button>
+        <button id="pwa-ios-close-btn">
+          <span class="material-symbols-outlined">check</span>
+          Got it
+        </button>
       </div>
     </div>
 
@@ -339,7 +451,7 @@ async def custom_swagger_ui_html():
               if (!isMobile()) {
                 const btn = document.createElement('button');
                 btn.id = 'pwa-install-btn';
-                btn.innerHTML = '📲 Install Yuktisárathi App';
+                btn.innerHTML = '<span class="material-symbols-outlined">install_mobile</span> Install Yuktisárathi App';
                 descriptionEl.insertBefore(btn, descriptionEl.firstChild);
 
                 window.addEventListener('beforeinstallprompt', (e) => {
@@ -413,8 +525,11 @@ async def custom_swagger_ui_html():
     </body>
     """
 
-    custom_html = swagger_html.body.decode().replace("</body>", pwa_and_logo_payload)
-    return HTMLResponse(content=custom_html)
+    html = swagger_html.body.decode()
+    html = html.replace("</head>", head_payload)
+    html = html.replace("</body>", body_payload)
+
+    return HTMLResponse(content=html)
 
 
 origins = [
