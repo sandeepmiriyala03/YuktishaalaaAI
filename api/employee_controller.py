@@ -13,17 +13,17 @@ def get_employees():
     return EmployeeService.get_employees()
 
 
+@router.get("/sp")
+def get_employees_sp():
+    return EmployeeService.get_employees_sp()
+
+
 @router.get("/{employee_id}")
 def get_employee(employee_id: int):
     employee = EmployeeService.get_employee(employee_id)
     if employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return employee
-
-
-@router.get("/sp")
-def get_employees_sp():
-    return EmployeeService.get_employees_sp()
 
 @router.post("")
 def create_employee(
