@@ -1,6 +1,9 @@
 
-a = 10
-b = 20
+
+print ("Enter value of a:")
+a = int(input())
+print ("Enter value of b:")
+b = int(input())
 print ("Before swapping:")
 print ("a =", a)
 print ("b =", b)
