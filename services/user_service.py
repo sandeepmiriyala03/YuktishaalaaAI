@@ -14,9 +14,16 @@ class userService:
     @staticmethod
     def get_users():
         user_list = userRepository.get_users()
-        # Implement the logic to retrieve users from the database
-        # For now, returning a placeholder response
-        return {
-            "message": "List of users",
-            "users": user_list
-        }
+        return user_list
+
+    @staticmethod
+    def get_user(user_id):
+        return userRepository.get_user(user_id)
+
+    @staticmethod
+    def update_user(user_id, user):
+        return userRepository.update_user(user_id, user)
+
+    @staticmethod
+    def delete_user(user_id):
+        return userRepository.delete_user(user_id)

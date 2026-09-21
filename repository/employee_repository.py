@@ -97,3 +97,53 @@ class EmployeeRepository:
                 )
 
             return employees
+
+    @staticmethod
+    def get_employee(employee_id):
+        with engine.connect() as conn:
+            row = conn.execute(
+                text("""
+                    SELECT id, Name, Salary, Age, DepartmentId
+                    FROM Employees
+                    WHERE id = :employee_id
+                """),
+                {"employee_id": employee_id}
+            ).mappings().first()
+            if not row:
+                return None
+            return {
+                "id": row["id"],
+                "name": row["name"],
+                "salary": row["salary"],
+                "age": row["age"],
+                "departmentId": row["departmentid"]
+            }
+
+    @staticmethod
+    def update_employee(employee_id, employee):
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("""
+                    UPDATE Employees
+                    SET Name = :name, Salary = :salary, Age = :age,
+                        DepartmentId = :department_id
+                    WHERE id = :employee_id
+                """),
+                {
+                    "employee_id": employee_id,
+                    "name": employee.name,
+                    "salary": employee.salary,
+                    "age": employee.age,
+                    "department_id": employee.departmentId
+                }
+            )
+            return result.rowcount > 0
+
+    @staticmethod
+    def delete_employee(employee_id):
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("DELETE FROM Employees WHERE id = :employee_id"),
+                {"employee_id": employee_id}
+            )
+            return result.rowcount > 0

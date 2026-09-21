@@ -5,3 +5,7 @@ class Employee(BaseModel):
     salary: int
     age: int
     departmentId: int
+
+
+class EmployeeUpdate(Employee):
+    pass

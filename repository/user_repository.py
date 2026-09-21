@@ -45,3 +45,50 @@ class userRepository:
                     "role": row.role
                 })
         return users
+
+    @staticmethod
+    def get_user(user_id):
+        with engine.connect() as conn:
+            row = conn.execute(
+                text("""
+                    SELECT id, username, password_hash, role
+                    FROM users
+                    WHERE id = :user_id
+                """),
+                {"user_id": user_id}
+            ).mappings().first()
+            if not row:
+                return None
+            return {
+                "id": row["id"],
+                "username": row["username"],
+                "password": row["password_hash"],
+                "role": row["role"]
+            }
+
+    @staticmethod
+    def update_user(user_id, user):
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("""
+                    UPDATE users
+                    SET username = :username, password_hash = :password, role = :role
+                    WHERE id = :user_id
+                """),
+                {
+                    "user_id": user_id,
+                    "username": user.username,
+                    "password": user.password,
+                    "role": user.role
+                }
+            )
+            return result.rowcount > 0
+
+    @staticmethod
+    def delete_user(user_id):
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("DELETE FROM users WHERE id = :user_id"),
+                {"user_id": user_id}
+            )
+            return result.rowcount > 0

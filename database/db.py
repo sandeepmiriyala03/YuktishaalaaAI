@@ -1,12 +1,13 @@
-from sqlalchemy import create_engine
+import os
 
-connection_string = (
-    "postgresql+psycopg2://"
-    "neondb_owner:npg_5J0HaXlALTBE"
-    "@ep-orange-hill-atrmkf0s-pooler.c-9.us-east-1.aws.neon.tech"
-    "/neondb"
-    "?sslmode=require&channel_binding=require"
-)
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+load_dotenv()
+
+connection_string = os.getenv("DATABASE_URL")
+if not connection_string:
+    raise RuntimeError("DATABASE_URL must be set in the environment")
 
 engine = create_engine(
     connection_string,
