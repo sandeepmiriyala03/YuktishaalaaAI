@@ -1,20 +1,29 @@
 import time
-from typing import Optional
-from fastapi import FastAPI, HTTPException
+from typing import Optional, List
+from fastapi import FastAPI, HTTPException, Depends, status
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from sqlalchemy.orm import Session
+
+# SQLAlchemy డ్రైవర్లను ఇంపోర్ట్ చేయడం
+import models
+from database import engine, get_db
 
 # 1. FastAPI App Initialization
 yukaiApp = FastAPI(
     title="Yukai FastAPI",
     version="1.0.0",
-    description="Product Management API",
-    docs_url="/yukai",
+    description="Product & Test Management API",
+    docs_url="/docs",
     redoc_url="/redoc",
 )
 
-# డేటాబేస్ కాన్ఫిగరేషన్
+# SQLAlchemy ద్వారా 'Test' టేబుల్ లేకపోతే ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది
+models.Base.metadata.create_all(bind=engine)
+
+
+# డేటాబేస్ కాన్ఫిగరేషన్ (Raw psycopg2 కోసం)
 DB_HOST = "localhost"
 DB_NAME = "FASTAPI"
 DB_USER = "postgres"
@@ -55,12 +64,31 @@ while True:
         time.sleep(2)
 
 
-# 4. Pydantic Request Models (అన్ని కాలమ్స్ తో)
+# 4. Pydantic Request Models
+
+# Products Schema (Raw SQL కోసం)
 class ProductSchema(BaseModel):
     Name: str
     Price: int
     Is_Sale: Optional[bool] = False
     Inventory: Optional[int] = 0
+
+# Test Table Schemas (SQLAlchemy / ORM కోసం)
+class TestCreate(BaseModel):
+    name: str
+    Fname: Optional[str] = None
+    salary: Optional[float] = None
+    createdby: Optional[str] = "System"
+
+class TestResponse(BaseModel):
+    Id: int
+    name: str
+    Fname: Optional[str] = None
+    salary: Optional[float] = None
+    createdby: str
+
+    class Config:
+        from_attributes = True
 
 
 # 5. API Routes
@@ -69,6 +97,10 @@ class ProductSchema(BaseModel):
 def read_root():
     return {"message": "Welcome to Yukai FastAPI"}
 
+
+# ==========================================
+#  A. PRODUCTS ENDPOINTS (Raw psycopg2 SQL)
+# ==========================================
 
 # FETCH ALL PRODUCTS (READ)
 @yukaiApp.get("/products")
@@ -164,3 +196,62 @@ def delete_product(product_id: int):
     finally:
         cur.close()
         db.close()
+
+
+# ==========================================
+#  B. TEST TABLE ENDPOINTS (SQLAlchemy ORM)
+# ==========================================
+
+# 1. CREATE RECORD IN "Test" TABLE
+@yukaiApp.post("/test", response_model=TestResponse, status_code=status.HTTP_201_CREATED)
+def create_test_record(item: TestCreate, db: Session = Depends(get_db)):
+    db_item = models.Test(
+        name=item.name,
+        Fname=item.Fname,
+        salary=item.salary,
+        createdby=item.createdby
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+# 2. READ ALL RECORDS FROM "Test" TABLE
+@yukaiApp.get("/test", response_model=List[TestResponse])
+def get_all_test_records(db: Session = Depends(get_db)):
+    records = db.query(models.Test).all()
+    return records
+
+
+# 3. READ SINGLE RECORD BY ID
+@yukaiApp.get("/test/{test_id}", response_model=TestResponse)
+def get_test_record(test_id: int, db: Session = Depends(get_db)):
+    record = db.query(models.Test).filter(models.Test.Id == test_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Record not found")
+    return record
+
+
+# CREATE (INSERT) A NEW RECORD IN "Test" TABLE
+@yukaiApp.post("/test", response_model=TestResponse, status_code=status.HTTP_201_CREATED)
+def create_test_record(item: TestCreate, db: Session = Depends(get_db)):
+    # 1. Pydantic schema నుండి SQLAlchemy Model ఆబ్జెక్ట్‌ను క్రియేట్ చేయడం
+    db_item = models.Test(
+        name=item.name,
+        Fname=item.Fname,
+        salary=item.salary,
+        createdby=item.createdby
+    )
+    
+    # 2. ఆబ్జెక్ట్‌ను DB Session లోకి చేర్చడం (Pending State)
+    db.add(db_item)
+    
+    # 3. డేటాబేస్‌కు INSERT SQL క్వెరీని పంపి సేవ్ చేయడం
+    db.commit()
+    
+    # 4. ఆటో-జెనరేట్ అయిన Id ని DB నుండి ఆబ్జెక్ట్‌లోకి రీఫ్రెష్ చేయడం
+    db.refresh(db_item)
+    
+    # 5. క్రియేట్ అయిన రికార్డును రెస్పాన్స్‌గా పంపడం
+    return db_item
