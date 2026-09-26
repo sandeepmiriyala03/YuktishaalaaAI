@@ -7,7 +7,12 @@ class DepartmentRepository:
     def get_departments():
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT id, DepartmentName, Location FROM Departments")
+                text("""
+                    SELECT id,
+                           DepartmentName AS departmentname,
+                           Location AS location
+                    FROM Departments
+                """)
             ).mappings()
             return [
                 {
@@ -23,7 +28,9 @@ class DepartmentRepository:
         with engine.connect() as conn:
             row = conn.execute(
                 text("""
-                    SELECT id, DepartmentName, Location
+                    SELECT id,
+                           DepartmentName AS departmentname,
+                           Location AS location
                     FROM Departments
                     WHERE id = :department_id
                 """),

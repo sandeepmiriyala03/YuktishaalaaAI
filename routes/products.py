@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 import schemas
-from database import get_raw_db_connection
+from postgres_database import get_raw_db_connection
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -36,11 +36,7 @@ def create_product(product: schemas.ProductSchema):
             )
             new_product = cursor.fetchone()
         db.commit()
-        return {
-            "status": "success",
-            "message": "Product created successfully",
-            "data": new_product,
-        }
+        return {"status": "success", "message": "Product created successfully", "data": new_product}
     except Exception as error:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(error)) from error
@@ -64,11 +60,7 @@ def update_product(product_id: int, product: schemas.ProductSchema):
             db.rollback()
             raise HTTPException(status_code=404, detail="Product not found")
         db.commit()
-        return {
-            "status": "success",
-            "message": "Product updated successfully",
-            "data": updated_product,
-        }
+        return {"status": "success", "message": "Product updated successfully", "data": updated_product}
     except HTTPException:
         raise
     except Exception as error:
@@ -92,11 +84,7 @@ def delete_product(product_id: int):
             db.rollback()
             raise HTTPException(status_code=404, detail="Product not found")
         db.commit()
-        return {
-            "status": "success",
-            "message": "Product deleted successfully",
-            "data": deleted_product,
-        }
+        return {"status": "success", "message": "Product deleted successfully", "data": deleted_product}
     except HTTPException:
         raise
     except Exception as error:

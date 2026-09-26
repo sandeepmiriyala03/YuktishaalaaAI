@@ -1,15 +1,22 @@
+import os
+
 import psycopg2
+from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
 from sqlalchemy import create_engine
 from sqlalchemy.engine import make_url
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-# PostgreSQL connection string (మీ డేటాబేస్ వివరాలను ఇక్కడ నవీకరించండి)
-DATABASE_URL = "postgresql+psycopg2://postgres:1234@localhost/FASTAPI"
+load_dotenv()
 
-# 1. Engine Creation
+DATABASE_URL = os.getenv(
+    "FASTAPI_DATABASE_URL",
+    "postgresql+psycopg2://postgres:1234@localhost/FASTAPI",
+)
 engine = create_engine(DATABASE_URL)
 _database_url = make_url(DATABASE_URL)
+Base = declarative_base()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_raw_db_connection():
@@ -25,13 +32,7 @@ def get_raw_db_connection():
         connection_args["port"] = _database_url.port
     return psycopg2.connect(**connection_args)
 
-# 2. Session Factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# 3. Base Class for Models
-Base = declarative_base()
-
-# 4. Dependency Helper for FastAPI Routes
 def get_db():
     db = SessionLocal()
     try:

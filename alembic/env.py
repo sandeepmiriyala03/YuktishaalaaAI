@@ -6,12 +6,13 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import models
-from database import DATABASE_URL
+import fastapi_models
+from postgres_database import DATABASE_URL
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
-target_metadata = models.Base.metadata
+target_metadata = fastapi_models.Base.metadata
+
 
 def run_migrations_offline():
     context.configure(
@@ -21,7 +22,6 @@ def run_migrations_offline():
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
@@ -32,10 +32,8 @@ def run_migrations_online():
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
-
         with context.begin_transaction():
             context.run_migrations()
 

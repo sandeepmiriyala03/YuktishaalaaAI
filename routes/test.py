@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-import models
+import fastapi_models as models
 import schemas
-from database import get_db
+from postgres_database import get_db
 
 router = APIRouter(prefix="/test", tags=["test"])
 

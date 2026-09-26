@@ -7,6 +7,9 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from api.employee_controller import router as employee_router
 from api.department_controller import router as department_router
 from api.user_controller import router as user_router
+from routes.products import router as products_router
+from routes.test import router as test_router
+from routes.auth import router as auth_router
 
 description = """
 The intelligent digital charioteer for enterprise graph topologies. Orchestrating live corporate data structures with high-fidelity telemetry.
@@ -21,13 +24,13 @@ The intelligent digital charioteer for enterprise graph topologies. Orchestratin
 
 ### 📡 Live Engine Capabilities:
 * **🟢 Production Layer:** Connected directly to the production **Neo graph database**. Live operational records serving current structural states securely. No staging or dummy arrays.
-* **🔒 Gateway Protocols:** Strict Cross-Origin Resource Sharing (CORS) rules applied. System endpoints interface exclusively with mapped white-listed development domains.
+* **🔒 Gateway Protocols:** Strict Cross-Origin Resource Sharing (CORS) rules yukaiApplied. System endpoints interface exclusively with myukaiApped white-listed development domains.
 
 ---
 `Engine Status: Active  Database: Neo4j Connected 🟢`
 """
 
-app = FastAPI(
+yukaiApp = FastAPI(
     title=" Yuktisárathi Engine Portal | YuktishaalaaAI",
     description=description,
     version="0.1.0-Alpha",
@@ -37,36 +40,39 @@ app = FastAPI(
     }
 )
 
-app.include_router(employee_router)
-app.include_router(department_router)
-app.include_router(user_router)
+yukaiApp.include_router(employee_router)
+yukaiApp.include_router(department_router)
+yukaiApp.include_router(user_router)
+yukaiApp.include_router(products_router)
+yukaiApp.include_router(test_router)
+yukaiApp.include_router(auth_router, prefix="/auth")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+yukaiApp.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.get("/favicon.ico", include_in_schema=False)
+@yukaiApp.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse("static/logo.png")
 
 
-@app.get("/sw.js", include_in_schema=False)
+@yukaiApp.get("/sw.js", include_in_schema=False)
 async def service_worker():
-    return FileResponse("static/sw.js", media_type="application/javascript")
+    return FileResponse("static/sw.js", media_type="yukaiApplication/javascript")
 
 
-@app.get("/docs", include_in_schema=False)
+@yukaiApp.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     swagger_html = get_swagger_ui_html(
-        openapi_url=app.openapi_url,
-        title=app.title + " - Core Dashboard",
-        swagger_ui_parameters=app.swagger_ui_parameters,
+        openapi_url=yukaiApp.openapi_url,
+        title=yukaiApp.title + " - Core Dashboard",
+        swagger_ui_parameters=yukaiApp.swagger_ui_parameters,
         swagger_favicon_url="/static/logo.png",
     )
 
     # ---- Tags that MUST live inside <head> (manifest only works here) ----
     head_payload = """
     <link rel="manifest" href="/static/manifest.json">
-    <link rel="apple-touch-icon" href="/static/logo.png">
+    <link rel="yukaiApple-touch-icon" href="/static/logo.png">
     <meta name="theme-color" content="#1a1a1a">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     </head>
@@ -157,7 +163,7 @@ async def custom_swagger_ui_html():
         border-top-left-radius: 18px;
         border-top-right-radius: 18px;
         transition: bottom 0.35s cubic-bezier(.2,.9,.3,1.3);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-family: -yukaiApple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
       #pwa-mobile-banner.show {
         bottom: 0;
@@ -252,7 +258,7 @@ async def custom_swagger_ui_html():
         border-top-left-radius: 18px;
         border-top-right-radius: 18px;
         padding: 22px 22px calc(22px + env(safe-area-inset-bottom));
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-family: -yukaiApple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         animation: slideUp 0.3s ease;
       }
       @keyframes slideUp {
@@ -355,7 +361,7 @@ async def custom_swagger_ui_html():
       <div class="sheet-inner">
         <h3>
           <span class="material-symbols-outlined">install_mobile</span>
-          Install this app on your iPhone
+          Install this yukaiApp on your iPhone
         </h3>
         <ol>
           <li>
@@ -450,7 +456,7 @@ async def custom_swagger_ui_html():
               if (!isMobile()) {
                 const btn = document.createElement('button');
                 btn.id = 'pwa-install-btn';
-                btn.innerHTML = '<span class="material-symbols-outlined">install_mobile</span> Install Yuktisárathi App';
+                btn.innerHTML = '<span class="material-symbols-outlined">install_mobile</span> Install Yuktisárathi yukaiApp';
                 descriptionEl.insertBefore(btn, descriptionEl.firstChild);
 
                 window.addEventListener('beforeinstallprompt', (e) => {
@@ -511,7 +517,7 @@ async def custom_swagger_ui_html():
               window.deferredPrompt = null;
             });
 
-            window.addEventListener('appinstalled', hideBanner);
+            window.addEventListener('yukaiAppinstalled', hideBanner);
           }
 
           dismissBtn.addEventListener('click', () => {
@@ -533,11 +539,11 @@ async def custom_swagger_ui_html():
 
 origins = [
     "http://localhost:3000",
-    "https://yuktishaalaa-ai.vercel.app",
+    "https://yuktishaalaa-ai.vercel.yukaiApp",
     "https://aksharatantra.miriyala.in"
 ]
 
-app.add_middleware(
+yukaiApp.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
@@ -546,11 +552,11 @@ app.add_middleware(
 )
 
 
-@app.get("/", include_in_schema=False)
+@yukaiApp.get("/", include_in_schema=False)
 async def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
 
-app.include_router(employee_router)
-app.include_router(department_router)
-app.include_router(user_router)
+yukaiApp.include_router(employee_router)
+yukaiApp.include_router(department_router)
+yukaiApp.include_router(user_router)

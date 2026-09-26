@@ -45,15 +45,14 @@ class EmployeeRepository:
 
             result = conn.execute(
                 text("""
-                    SELECT
-                        id,
-                        Name,
-                        Salary,
-                        Age,
-                        DepartmentId
+                    SELECT id,
+                           Name AS name,
+                           Salary AS salary,
+                           Age AS age,
+                           DepartmentId AS departmentid
                     FROM Employees
                 """)
-            )
+            ).mappings()
 
             employees = []
 
@@ -61,11 +60,11 @@ class EmployeeRepository:
 
                 employees.append(
                     {
-                        "id": row.id,
-                        "name": row.name,
-                        "salary": row.salary,
-                        "age": row.age,
-                        "departmentid": row.departmentid
+                        "id": row["id"],
+                        "name": row["name"],
+                        "salary": row["salary"],
+                        "age": row["age"],
+                        "departmentid": row["departmentid"]
                     }
                 )
 
@@ -75,6 +74,9 @@ class EmployeeRepository:
 
     @staticmethod
     def get_employees_sp():
+
+        if engine.dialect.name != "mssql":
+            return EmployeeRepository.get_employees()
 
         with engine.connect() as conn:
 
@@ -103,7 +105,11 @@ class EmployeeRepository:
         with engine.connect() as conn:
             row = conn.execute(
                 text("""
-                    SELECT id, Name, Salary, Age, DepartmentId
+                    SELECT id,
+                           Name AS name,
+                           Salary AS salary,
+                           Age AS age,
+                           DepartmentId AS departmentid
                     FROM Employees
                     WHERE id = :employee_id
                 """),

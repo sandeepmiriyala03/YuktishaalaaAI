@@ -10,13 +10,13 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-import models
+import fastapi_models as models
 import schemas
-from database import get_db
+from postgres_database import get_db
 
 load_dotenv()
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["JWT auth"])
 bearer_scheme = HTTPBearer(auto_error=False)
 TOKEN_EXPIRE_MINUTES = 5
 
@@ -33,18 +33,14 @@ def get_jwt_secret() -> str:
 
 @router.post("", response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(item: schemas.UserCreate, db: Session = Depends(get_db)):
-    hashed_password = bcrypt.hashpw(
-        item.password.encode("utf-8"), bcrypt.gensalt()
-    ).decode("utf-8")
+    hashed_password = bcrypt.hashpw(item.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     db_item = models.User(email=item.email, password=hashed_password)
     db.add(db_item)
-
     try:
         db.commit()
     except IntegrityError as error:
         db.rollback()
         raise HTTPException(status_code=409, detail="Email already registered") from error
-
     db.refresh(db_item)
     return db_item
 
@@ -52,9 +48,7 @@ def create_user(item: schemas.UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=schemas.TokenResponse)
 def login(item: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == item.username).first()
-    if user is None or not bcrypt.checkpw(
-        item.password.encode("utf-8"), user.password.encode("utf-8")
-    ):
+    if user is None or not bcrypt.checkpw(item.password.encode("utf-8"), user.password.encode("utf-8")):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
@@ -84,7 +78,6 @@ def get_current_user(
             detail="Bearer token required",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
     try:
         payload = jwt.decode(
             credentials.credentials,

@@ -1,4 +1,4 @@
-"""Add modified timestamp to users."""
+"""Add modified timestamp to PostgreSQL users."""
 from alembic import op
 import sqlalchemy as sa
 
