@@ -34,6 +34,11 @@ class UserCreate(BaseModel):
     password: str
 
 
+class UserLogin(BaseModel):
+    username: EmailStr
+    password: str
+
+
 # Response Schema: Returned to clients (excludes sensitive password)
 class UserOut(BaseModel):
     id: int
@@ -42,3 +47,10 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True  # Enables ORM model conversion in Pydantic v2
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    user: UserOut
