@@ -41,6 +41,8 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    createdby: str
+    modifiedby: str | None = None
     modified_Dt: datetime | None = None
 
     class Config:

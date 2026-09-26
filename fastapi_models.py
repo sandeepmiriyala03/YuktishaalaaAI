@@ -28,5 +28,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
+    createdby = Column(String(50), nullable=False, default="System", server_default="System")
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    modifiedby = Column(String(50), nullable=True)
     modified_Dt = Column(TIMESTAMP(timezone=True), nullable=True, onupdate=func.now())
