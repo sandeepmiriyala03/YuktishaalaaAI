@@ -1,12 +1,15 @@
 import time
 from typing import Optional, List
+import bcrypt
 from fastapi import FastAPI, HTTPException, Depends, status
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 # SQLAlchemy డ్రైవర్లను ఇంపోర్ట్ చేయడం
+import schemas  # <--- schemas మొత్తం ఇంపోర్ట్ చేయడం
 import models
 from database import engine, get_db
 
@@ -233,25 +236,18 @@ def get_test_record(test_id: int, db: Session = Depends(get_db)):
     return record
 
 
-# CREATE (INSERT) A NEW RECORD IN "Test" TABLE
-@yukaiApp.post("/test", response_model=TestResponse, status_code=status.HTTP_201_CREATED)
-def create_test_record(item: TestCreate, db: Session = Depends(get_db)):
-    # 1. Pydantic schema నుండి SQLAlchemy Model ఆబ్జెక్ట్‌ను క్రియేట్ చేయడం
-    db_item = models.Test(
-        name=item.name,
-        Fname=item.Fname,
-        salary=item.salary,
-        createdby=item.createdby
-    )
-    
-    # 2. ఆబ్జెక్ట్‌ను DB Session లోకి చేర్చడం (Pending State)
+#ORM tool for the Model
+@yukaiApp.post("/users", response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED)
+def create_user(item: schemas.UserCreate, db: Session = Depends(get_db)):
+    hashed_password = bcrypt.hashpw(
+        item.password.encode("utf-8"), bcrypt.gensalt()
+    ).decode("utf-8")
+    db_item = models.User(email=item.email, password=hashed_password)
     db.add(db_item)
-    
-    # 3. డేటాబేస్‌కు INSERT SQL క్వెరీని పంపి సేవ్ చేయడం
-    db.commit()
-    
-    # 4. ఆటో-జెనరేట్ అయిన Id ని DB నుండి ఆబ్జెక్ట్‌లోకి రీఫ్రెష్ చేయడం
+    try:
+        db.commit()
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Email already registered") from error
     db.refresh(db_item)
-    
-    # 5. క్రియేట్ అయిన రికార్డును రెస్పాన్స్‌గా పంపడం
     return db_item
