@@ -1,0 +1,48 @@
+{
+  "description": "Test-table endpoint examples. These routes use the PostgreSQL database configured by FASTAPI_DATABASE_URL.",
+  "endpoints": [
+    {
+      "name": "Create test record",
+      "method": "POST",
+      "path": "/test",
+      "expected_status": 201,
+      "request_body": {
+        "name": "Sample Test Record",
+        "Fname": "Sample Parent",
+        "salary": 42.5,
+        "createdby": "test-sample"
+      }
+    },
+    {
+      "name": "List test records",
+      "method": "GET",
+      "path": "/test",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Get test record by ID",
+      "method": "GET",
+      "path": "/test/{test_id}",
+      "example_path": "/test/1",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Test record validation failure",
+      "method": "POST",
+      "path": "/test",
+      "expected_status": 422,
+      "request_body": {
+        "salary": 42.5
+      }
+    },
+    {
+      "name": "Test record not found",
+      "method": "GET",
+      "path": "/test/999999",
+      "expected_status": 404,
+      "request_body": null
+    }
+  ]
+}

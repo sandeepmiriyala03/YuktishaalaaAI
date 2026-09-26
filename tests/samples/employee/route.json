@@ -1,0 +1,79 @@
+{
+  "description": "Employee endpoint examples. Create a department first and use its ID for departmentId.",
+  "endpoints": [
+    {
+      "name": "List employees",
+      "method": "GET",
+      "path": "/employee/employees",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "List employees through stored-procedure route",
+      "method": "GET",
+      "path": "/employee/sp",
+      "expected_status": 200,
+      "request_body": null,
+      "note": "On SQLite this route falls back to the regular employee list."
+    },
+    {
+      "name": "Create employee",
+      "method": "POST",
+      "path": "/employee",
+      "expected_status": 200,
+      "request_body": {
+        "name": "Sample Employee",
+        "salary": 50000,
+        "age": 30,
+        "departmentId": 1
+      },
+      "note": "Replace departmentId with an existing department ID."
+    },
+    {
+      "name": "Get employee by ID",
+      "method": "GET",
+      "path": "/employee/{employee_id}",
+      "example_path": "/employee/1",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Update employee",
+      "method": "PUT",
+      "path": "/employee/{employee_id}",
+      "example_path": "/employee/1",
+      "expected_status": 200,
+      "request_body": {
+        "name": "Sample Employee Updated",
+        "salary": 52000,
+        "age": 31,
+        "departmentId": 1
+      }
+    },
+    {
+      "name": "Delete employee",
+      "method": "DELETE",
+      "path": "/employee/{employee_id}",
+      "example_path": "/employee/1",
+      "expected_status": 204,
+      "request_body": null,
+      "note": "Deletes the selected employee permanently. Use a test record when trying this example."
+    },
+    {
+      "name": "Employee validation failure",
+      "method": "POST",
+      "path": "/employee",
+      "expected_status": 422,
+      "request_body": {
+        "name": "Missing required fields"
+      }
+    },
+    {
+      "name": "Employee not found",
+      "method": "GET",
+      "path": "/employee/999999",
+      "expected_status": 404,
+      "request_body": null
+    }
+  ]
+}

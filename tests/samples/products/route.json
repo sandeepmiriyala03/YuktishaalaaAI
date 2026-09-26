@@ -1,0 +1,62 @@
+{
+  "description": "Product endpoint examples. These routes use the PostgreSQL database configured by FASTAPI_DATABASE_URL.",
+  "endpoints": [
+    {
+      "name": "List products",
+      "method": "GET",
+      "path": "/products",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Create product",
+      "method": "POST",
+      "path": "/products",
+      "expected_status": 200,
+      "request_body": {
+        "Name": "Sample Product",
+        "Price": 25,
+        "Is_Sale": false,
+        "Inventory": 5
+      }
+    },
+    {
+      "name": "Update product",
+      "method": "PUT",
+      "path": "/products/{product_id}",
+      "example_path": "/products/1",
+      "expected_status": 200,
+      "request_body": {
+        "Name": "Sample Product Updated",
+        "Price": 29,
+        "Is_Sale": true,
+        "Inventory": 4
+      }
+    },
+    {
+      "name": "Delete product",
+      "method": "DELETE",
+      "path": "/products/{product_id}",
+      "example_path": "/products/1",
+      "expected_status": 200,
+      "request_body": null,
+      "note": "Deletes the selected product permanently. Use a test record when trying this example."
+    },
+    {
+      "name": "Product not found",
+      "method": "DELETE",
+      "path": "/products/999999",
+      "expected_status": 404,
+      "request_body": null
+    },
+    {
+      "name": "Product validation failure",
+      "method": "POST",
+      "path": "/products",
+      "expected_status": 422,
+      "request_body": {
+        "Price": 12
+      }
+    }
+  ]
+}

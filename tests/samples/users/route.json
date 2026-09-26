@@ -1,0 +1,60 @@
+{
+  "description": "Legacy SQLite user CRUD examples. This API stores the password field as plain text; use fake test values only.",
+  "endpoints": [
+    {
+      "name": "List users",
+      "method": "GET",
+      "path": "/users/users",
+      "expected_status": 200,
+      "request_body": null,
+      "note": "The current implementation includes password values in this response; do not use real passwords."
+    },
+    {
+      "name": "Create user",
+      "method": "POST",
+      "path": "/users",
+      "expected_status": 200,
+      "request_body": {
+        "username": "sample-user",
+        "password": "FAKE-TEST-PASSWORD-ONLY",
+        "role": "test"
+      }
+    },
+    {
+      "name": "Get user by ID",
+      "method": "GET",
+      "path": "/users/{user_id}",
+      "example_path": "/users/1",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Update user",
+      "method": "PUT",
+      "path": "/users/{user_id}",
+      "example_path": "/users/1",
+      "expected_status": 200,
+      "request_body": {
+        "username": "sample-user-updated",
+        "password": "FAKE-TEST-PASSWORD-ONLY",
+        "role": "test"
+      }
+    },
+    {
+      "name": "Delete user",
+      "method": "DELETE",
+      "path": "/users/{user_id}",
+      "example_path": "/users/1",
+      "expected_status": 204,
+      "request_body": null,
+      "note": "Deletes the selected user permanently. Use a test record when trying this example."
+    },
+    {
+      "name": "User not found",
+      "method": "GET",
+      "path": "/users/999999",
+      "expected_status": 404,
+      "request_body": null
+    }
+  ]
+}

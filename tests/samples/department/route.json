@@ -1,0 +1,68 @@
+{
+  "description": "Department endpoint examples. Description fields act as comments while keeping this file valid JSON.",
+  "endpoints": [
+    {
+      "name": "List departments",
+      "method": "GET",
+      "path": "/department/departments",
+      "expected_status": 200,
+      "request_body": null,
+      "sample_response": [
+        {
+          "id": 1,
+          "departmentName": "Sample Department",
+          "location": "Seattle"
+        }
+      ]
+    },
+    {
+      "name": "Create department",
+      "method": "POST",
+      "path": "/department",
+      "expected_status": 200,
+      "request_body": {
+        "departmentName": "Sample Department",
+        "location": "Seattle"
+      },
+      "sample_response": {
+        "message": "Department Created"
+      }
+    },
+    {
+      "name": "Get department by ID",
+      "method": "GET",
+      "path": "/department/{department_id}",
+      "example_path": "/department/1",
+      "expected_status": 200,
+      "request_body": null,
+      "note": "Use the id returned by GET /department/departments or create a department first."
+    },
+    {
+      "name": "Update department",
+      "method": "PUT",
+      "path": "/department/{department_id}",
+      "example_path": "/department/1",
+      "expected_status": 200,
+      "request_body": {
+        "departmentName": "Sample Department Updated",
+        "location": "Portland"
+      }
+    },
+    {
+      "name": "Delete department",
+      "method": "DELETE",
+      "path": "/department/{department_id}",
+      "example_path": "/department/1",
+      "expected_status": 204,
+      "request_body": null,
+      "note": "Deletes the selected department permanently. Use a test record when trying this example."
+    },
+    {
+      "name": "Department not found",
+      "method": "GET",
+      "path": "/department/999999",
+      "expected_status": 404,
+      "request_body": null
+    }
+  ]
+}

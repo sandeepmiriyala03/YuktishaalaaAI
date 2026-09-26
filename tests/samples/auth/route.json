@@ -1,0 +1,75 @@
+{
+  "description": "JWT authentication endpoint examples. Configure JWT_SECRET_KEY in the root .env before login.",
+  "endpoints": [
+    {
+      "name": "Register auth user",
+      "method": "POST",
+      "path": "/auth/users",
+      "expected_status": 201,
+      "request_body": {
+        "email": "sample-auth-user@example.com",
+        "password": "FAKE-TEST-PASSWORD-ONLY"
+      },
+      "note": "Password is bcrypt-hashed. Use a unique email address for each registration."
+    },
+    {
+      "name": "Login with valid credentials",
+      "method": "POST",
+      "path": "/auth/users/login",
+      "expected_status": 200,
+      "request_body": {
+        "username": "sample-auth-user@example.com",
+        "password": "FAKE-TEST-PASSWORD-ONLY"
+      },
+      "sample_response": {
+        "access_token": "<JWT returned by API>",
+        "token_type": "bearer",
+        "expires_in": 300,
+        "user": {
+          "id": 1,
+          "email": "sample-auth-user@example.com",
+          "createdby": "System",
+          "modifiedby": null,
+          "modified_Dt": null
+        }
+      }
+    },
+    {
+      "name": "Login with invalid credentials",
+      "method": "POST",
+      "path": "/auth/users/login",
+      "expected_status": 401,
+      "request_body": {
+        "username": "sample-auth-user@example.com",
+        "password": "WRONG-TEST-PASSWORD"
+      }
+    },
+    {
+      "name": "Get current user with valid token",
+      "method": "GET",
+      "path": "/auth/users/me",
+      "expected_status": 200,
+      "request_body": null,
+      "headers": {
+        "Authorization": "Bearer <access_token from successful login>"
+      }
+    },
+    {
+      "name": "Get current user without token",
+      "method": "GET",
+      "path": "/auth/users/me",
+      "expected_status": 401,
+      "request_body": null
+    },
+    {
+      "name": "Duplicate auth registration",
+      "method": "POST",
+      "path": "/auth/users",
+      "expected_status": 409,
+      "request_body": {
+        "email": "sample-auth-user@example.com",
+        "password": "FAKE-TEST-PASSWORD-ONLY"
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "description": "Root app, docs, and static-file endpoint examples.",
+  "endpoints": [
+    {
+      "name": "Root redirects to docs",
+      "method": "GET",
+      "path": "/",
+      "expected_status": 200,
+      "request_body": null,
+      "note": "HTTP clients that follow redirects receive the docs response."
+    },
+    {
+      "name": "Swagger docs",
+      "method": "GET",
+      "path": "/docs",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "OpenAPI schema",
+      "method": "GET",
+      "path": "/openapi.json",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Favicon",
+      "method": "GET",
+      "path": "/favicon.ico",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "Service worker",
+      "method": "GET",
+      "path": "/sw.js",
+      "expected_status": 200,
+      "request_body": null
+    },
+    {
+      "name": "PWA manifest",
+      "method": "GET",
+      "path": "/static/manifest.json",
+      "expected_status": 200,
+      "request_body": null
+    }
+  ]
+}

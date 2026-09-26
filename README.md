@@ -31,3 +31,19 @@ Open `http://localhost:8000/docs` for the interactive CRUD API.
 - JWT user registration/login: `/auth/users`
 
 Each resource supports create, list, get-by-id, update, and delete operations.
+
+## Endpoint Samples
+
+Route-by-route JSON request examples are in `tests/samples/`:
+
+- `tests/samples/app/route.json`: root, docs, favicon, service worker, and static manifest.
+- `tests/samples/department/route.json`: department list/create/get/update/delete.
+- `tests/samples/employee/route.json`: employee list, stored-procedure route, and CRUD.
+- `tests/samples/users/route.json`: legacy SQLite user CRUD.
+- `tests/samples/products/route.json`: PostgreSQL product CRUD.
+- `tests/samples/test/route.json`: PostgreSQL test-record create/list/get.
+- `tests/samples/auth/route.json`: JWT registration, login, and protected current-user route.
+
+Each `route.json` contains the HTTP method, path, expected status, and `request_body` when the endpoint accepts one. `description` and `note` fields explain usage; they are used instead of comments because JSON does not allow comment syntax. Replace path IDs with IDs returned by create/list requests. For bearer-authenticated requests, register and log in first, then use the returned `access_token` in the `Authorization: Bearer <token>` header. Samples are references and are not automatically executed. Use test data only; the legacy SQLite user API stores its password as plain text.
+
+For interactive requests, start the app and open `http://localhost:8000/docs`.

@@ -1,0 +1,272 @@
+{
+  "note": "Valid JSON request examples. JSON has no comment syntax, so each case includes a description and expected status.",
+  "replace_ids_note": "Replace sample IDs in paths with IDs returned by the corresponding POST request.",
+  "cases": [
+    {
+      "name": "Root redirects to API docs",
+      "method": "GET",
+      "path": "/",
+      "expected_status": 200
+    },
+    {
+      "name": "OpenAPI document",
+      "method": "GET",
+      "path": "/openapi.json",
+      "expected_status": 200
+    },
+    {
+      "name": "Swagger UI",
+      "method": "GET",
+      "path": "/docs",
+      "expected_status": 200
+    },
+    {
+      "name": "Department list",
+      "method": "GET",
+      "path": "/department/departments",
+      "expected_status": 200
+    },
+    {
+      "name": "Create department",
+      "method": "POST",
+      "path": "/department",
+      "expected_status": 200,
+      "body": {
+        "departmentName": "Sample Department",
+        "location": "Seattle"
+      }
+    },
+    {
+      "name": "Get department by ID",
+      "method": "GET",
+      "path": "/department/1",
+      "expected_status": 200
+    },
+    {
+      "name": "Update department",
+      "method": "PUT",
+      "path": "/department/1",
+      "expected_status": 200,
+      "body": {
+        "departmentName": "Sample Department Updated",
+        "location": "Portland"
+      }
+    },
+    {
+      "name": "Department not found",
+      "method": "GET",
+      "path": "/department/999999",
+      "expected_status": 404
+    },
+    {
+      "name": "Employee list",
+      "method": "GET",
+      "path": "/employee/employees",
+      "expected_status": 200
+    },
+    {
+      "name": "Employee stored-procedure route (uses list fallback on SQLite)",
+      "method": "GET",
+      "path": "/employee/sp",
+      "expected_status": 200
+    },
+    {
+      "name": "Create employee",
+      "method": "POST",
+      "path": "/employee",
+      "expected_status": 200,
+      "body": {
+        "name": "Sample Employee",
+        "salary": 50000,
+        "age": 30,
+        "departmentId": 1
+      }
+    },
+    {
+      "name": "Get employee by ID",
+      "method": "GET",
+      "path": "/employee/1",
+      "expected_status": 200
+    },
+    {
+      "name": "Update employee",
+      "method": "PUT",
+      "path": "/employee/1",
+      "expected_status": 200,
+      "body": {
+        "name": "Sample Employee Updated",
+        "salary": 52000,
+        "age": 31,
+        "departmentId": 1
+      }
+    },
+    {
+      "name": "Employee validation failure",
+      "method": "POST",
+      "path": "/employee",
+      "expected_status": 422,
+      "body": {
+        "name": "Missing salary and department"
+      }
+    },
+    {
+      "name": "Root SQLite user list",
+      "method": "GET",
+      "path": "/users/users",
+      "expected_status": 200
+    },
+    {
+      "name": "Create root SQLite user",
+      "method": "POST",
+      "path": "/users",
+      "expected_status": 200,
+      "body": {
+        "username": "sample-user",
+        "password": "E2E-PLACEHOLDER-NOT-A-REAL-PASSWORD",
+        "role": "test"
+      },
+      "note": "Legacy route stores this password field as plain text. Use only a fake test value, never a real password."
+    },
+    {
+      "name": "Get root SQLite user by ID",
+      "method": "GET",
+      "path": "/users/1",
+      "expected_status": 200
+    },
+    {
+      "name": "Update root SQLite user",
+      "method": "PUT",
+      "path": "/users/1",
+      "expected_status": 200,
+      "body": {
+        "username": "sample-user-updated",
+        "password": "E2E-PLACEHOLDER-NOT-A-REAL-PASSWORD",
+        "role": "test"
+      }
+    },
+    {
+      "name": "Create product",
+      "method": "POST",
+      "path": "/products",
+      "expected_status": 200,
+      "body": {
+        "Name": "Sample Product",
+        "Price": 25,
+        "Is_Sale": false,
+        "Inventory": 5
+      }
+    },
+    {
+      "name": "Product list",
+      "method": "GET",
+      "path": "/products",
+      "expected_status": 200
+    },
+    {
+      "name": "Update product",
+      "method": "PUT",
+      "path": "/products/1",
+      "expected_status": 200,
+      "body": {
+        "Name": "Sample Product Updated",
+        "Price": 29,
+        "Is_Sale": true,
+        "Inventory": 4
+      }
+    },
+    {
+      "name": "Product not found",
+      "method": "DELETE",
+      "path": "/products/999999",
+      "expected_status": 404
+    },
+    {
+      "name": "Create Test-table record",
+      "method": "POST",
+      "path": "/test",
+      "expected_status": 201,
+      "body": {
+        "name": "Sample Test Record",
+        "Fname": "Sample Parent",
+        "salary": 42.5,
+        "createdby": "test.json"
+      }
+    },
+    {
+      "name": "Test-table record list",
+      "method": "GET",
+      "path": "/test",
+      "expected_status": 200
+    },
+    {
+      "name": "Get Test-table record by ID",
+      "method": "GET",
+      "path": "/test/1",
+      "expected_status": 200
+    },
+    {
+      "name": "Create JWT-auth user",
+      "method": "POST",
+      "path": "/auth/users",
+      "expected_status": 201,
+      "body": {
+        "email": "sample-auth-user@example.com",
+        "password": "Use-a-temporary-test-password"
+      }
+    },
+    {
+      "name": "JWT login with valid credentials",
+      "method": "POST",
+      "path": "/auth/users/login",
+      "expected_status": 200,
+      "body": {
+        "username": "sample-auth-user@example.com",
+        "password": "Use-a-temporary-test-password"
+      },
+      "note": "Requires JWT_SECRET_KEY to be configured. Response contains access_token and expires_in=300."
+    },
+    {
+      "name": "JWT login with invalid credentials",
+      "method": "POST",
+      "path": "/auth/users/login",
+      "expected_status": 401,
+      "body": {
+        "username": "sample-auth-user@example.com",
+        "password": "Wrong-test-password"
+      }
+    },
+    {
+      "name": "Get authenticated JWT user",
+      "method": "GET",
+      "path": "/auth/users/me",
+      "expected_status": 200,
+      "headers": {
+        "Authorization": "Bearer <access_token from valid login>"
+      }
+    },
+    {
+      "name": "JWT request without token",
+      "method": "GET",
+      "path": "/auth/users/me",
+      "expected_status": 401
+    },
+    {
+      "name": "Static manifest",
+      "method": "GET",
+      "path": "/static/manifest.json",
+      "expected_status": 200
+    },
+    {
+      "name": "Favicon",
+      "method": "GET",
+      "path": "/favicon.ico",
+      "expected_status": 200
+    },
+    {
+      "name": "Service worker",
+      "method": "GET",
+      "path": "/sw.js",
+      "expected_status": 200
+    }
+  ]
+}
